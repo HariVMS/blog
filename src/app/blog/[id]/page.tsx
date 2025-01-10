@@ -1,25 +1,15 @@
-// import ContentContainer from "@/Components/ContentContainer";
+import ContentContainer from "@/Components/ContentContainer";
+import { UserContext } from "@/Components/HomeContainer";
+import ViewBlog from "@/Components/ViewBlog";
+import { useContext } from "react";
 
-// export default function blogPage() {
-//   return (
-//     <>
-//       <ContentContainer>
-//         <div className="deatils flex flex-col gap-2 w-full ">
-//           <input type="text" name="author" id="author" placeholder="Author" />
-//           <input type="text" name="title" id="title" placeholder="Title" />
-//           <textarea
-//             name="Descriptions"
-//             id="Descriptions"
-//             placeholder="Description"
-//           ></textarea>
-//           <input type="text" name="img" id="img" placeholder="image Url" />
-//           <div>
-//           <button className="bg-blue-600 mt-2 p-2 rounded-md text-white">
-//             Add Data
-//           </button>
-//           </div>
-//         </div>
-//       </ContentContainer>
-//     </>
-//   );
-// }
+export default async function blogPage({ params }: { params: { id: string } }) {
+  const id = await params.id;
+  return (
+    <>
+      <ContentContainer design="rounded-md w-2/3 ml-56">
+        <ViewBlog id={id} />
+      </ContentContainer>
+    </>
+  );
+}
