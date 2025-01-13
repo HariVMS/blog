@@ -1,5 +1,5 @@
-import "./globals.css";
 import React from "react";
+import "./globals.css";
 import NavBar from "../Components/NavBar";
 import HomeContainer from "../Components/HomeContainer";
 

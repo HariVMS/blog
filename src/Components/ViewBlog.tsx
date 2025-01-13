@@ -1,19 +1,33 @@
 "use client";
+import Image from "next/image";
 import React, { useContext } from "react";
 import { UserContext } from "./HomeContainer";
 
-export default function ViewBlog({ id }: { id: string }) {
+const ViewBlog = ({ id }: { id: string }) => {
   const currentDate = new Date().toLocaleDateString();
-  const allDatas = useContext(UserContext);
-  const { data, css }: any = allDatas;
+  const userContextData = useContext(UserContext);
+  if (!userContextData) {
+    throw new Error("UserContext is not provided!");
+  }
+  const { data, css }: UserContextType = userContextData;
   const blogData = data[Number(id)];
-  if (!blogData) {
+  if (id == "01") {
+    return <div>This Blog Post Only For Sample Preview</div>;
+  } else if (!blogData) {
     return <div>Blog post not found</div>;
   }
+
   return (
     <>
       <div>
-        <img className={`rounded-md w-full`} src={blogData.img} alt="" />
+        <Image
+          className={`rounded-md w-full`}
+          src={blogData.img}
+          alt="Img Not found"
+          layout="responsive"
+          width={16}
+          height={9}
+        />
         <div className="heading">
           <h2 className={css.heading}>{blogData.title}</h2>
         </div>
@@ -27,4 +41,6 @@ export default function ViewBlog({ id }: { id: string }) {
       </div>
     </>
   );
-}
+};
+
+export default ViewBlog;
