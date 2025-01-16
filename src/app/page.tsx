@@ -1,10 +1,12 @@
-import ContentContainer from "@/Components/ContentContainer";
-import { DataContainer } from "@/Components/DataContainer";
+import React from "react";
+import WelcomePage from "@/Components/WelcomePage";
 
-export default function Home() {
+const page = () => {
   return (
-    <ContentContainer design={null}>
-      <DataContainer />
-    </ContentContainer>
+    <>
+      <WelcomePage />
+    </>
   );
-}
+};
+
+export default page;

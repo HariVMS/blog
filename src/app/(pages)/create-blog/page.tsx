@@ -1,12 +1,16 @@
 import ContentContainer from "@/Components/ContentContainer";
 import CreateBolg from "@/Components/CreateBlog";
 
-export default function createBlog() {
+const createBlog = () => {
   return (
     <>
-      <ContentContainer design={null}>
+      <ContentContainer
+        design={`bg-[#e5e8eb] flex flex-wrap p-8 rounded-md gap-3 justify-center `}
+      >
         <CreateBolg />
       </ContentContainer>
     </>
   );
-}
+};
+
+export default createBlog;
