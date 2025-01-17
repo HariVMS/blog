@@ -1,11 +1,11 @@
-"use client";
-import { useRouter } from "next/navigation";
+'use client';
+import { useRouter } from 'next/navigation';
 
 const WelcomePage = () => {
   const router = useRouter();
 
   const handleEnterClick = () => {
-    router.push("/create-blog"); // Navigate to the "create-blog" page
+    router.push('/create-blog');
   };
 
   return (

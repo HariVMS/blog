@@ -1,5 +1,5 @@
-import ContentContainer from "@/Components/ContentContainer";
-import CreateBolg from "@/Components/CreateBlog";
+import ContentContainer from '@/Components/ContentContainer';
+import CreateBolg from '@/Components/CreateBlog';
 
 const createBlog = () => {
   return (

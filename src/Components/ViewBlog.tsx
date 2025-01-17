@@ -1,42 +1,39 @@
-"use client";
-import Image from "next/image";
-import React, { useContext } from "react";
-import { UserContext } from "./HomeContainer";
+'use client';
+import Image from 'next/image';
+import Link from 'next/link';
+import React, { useContext } from 'react';
+import { UserContext } from './HomeContainer';
+import { UserContextDataCssType } from '@/interface/interface';
 
 const ViewBlog = ({ id }: { id: string }) => {
   const currentDate = new Date().toLocaleDateString();
   const userContextData = useContext(UserContext);
   if (!userContextData) {
-    throw new Error("UserContext is not provided!");
+    throw new Error('UserContext is not provided!');
   }
-  const { data, css }: UserContextType = userContextData;
+  const { data, css }: UserContextDataCssType = userContextData;
   const blogData = data[Number(id)];
 
-  if (id === "01") {
-    return (
-      <div className="flex flex-col items-center justify-center gap-6">
-        <p className="text-lg font-medium text-gray-600">
-          This Blog Post is only for sample preview. Please create a new blog.
-        </p>
-        <button className={`${css.readButton} max-w-[560px]`}>
-          Create Blog
-        </button>
-      </div>
-    );
-  } else if (!blogData) {
+  if (!blogData) {
     return <div className="text-center text-gray-600">Blog post not found</div>;
   }
+  const blogDetails = [
+    { label: 'Name', value: blogData.author },
+    { label: 'Email', value: blogData.email },
+    { label: 'Phone', value: blogData.phone },
+    { label: 'Gender', value: blogData.gender },
+  ];
 
   return (
-    <div className="w-full max-w-[900px] mx-auto bg-white shadow-lg rounded-lg overflow-hidden p-6">
+    <div className="w-full bg-white shadow-lg rounded-lg overflow-hidden p-6">
       <Image
-        className="rounded-md"
+        className="rounded-md ml-[190px]"
         src={blogData.img}
         alt="Blog Image"
         width={1000}
         height={1000}
       />
-      <div className="mt-6 flex flex-col gap-6">
+      <div className="mt-6 flex flex-col gap-6 w-full">
         <h2 className={`${css.heading} text-2xl font-semibold text-gray-800`}>
           {blogData.title}
         </h2>
@@ -48,22 +45,20 @@ const ViewBlog = ({ id }: { id: string }) => {
         <div className="mt-4">
           <h3 className="text-lg font-medium text-gray-800">Author Details</h3>
           <div className="grid grid-cols-2 gap-4 mt-2 text-gray-700">
-            <div>
-              <p className="font-medium">Name:</p>
-              <p>{blogData.author}</p>
-            </div>
-            <div>
-              <p className="font-medium">Email:</p>
-              <p>{blogData.email}</p>
-            </div>
-            <div>
-              <p className="font-medium">Phone:</p>
-              <p>{blogData.phone}</p>
-            </div>
-            <div>
-              <p className="font-medium">Gender:</p>
-              <p>{blogData.gender}</p>
-            </div>
+            {blogDetails.map((detail, index) => (
+              <div key={index}>
+                <p className="font-medium">{detail.label}:</p>
+                <p>{detail.value}</p>
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-around pt-14">
+            <button className={css.readButton}>
+              <Link href={`/edit-blog/${id}`}>Edit</Link>
+            </button>
+            <button className={css.readButton}>
+              <Link href={`/view-blog`}>Home</Link>
+            </button>
           </div>
         </div>
       </div>

@@ -1,12 +1,12 @@
-import ContentContainer from "@/Components/ContentContainer";
-import ViewBlog from "@/Components/ViewBlog";
+import ContentContainer from '@/Components/ContentContainer';
+import ViewBlog from '@/Components/ViewBlog';
 
-const blogPage = async ({ params }: { params: { id: string } }) => {
-  const id = await params.id;
+const blogPage = async ({ params }: { params: Promise<{ id: string }> }) => {
+  const parameter = await params;
   return (
     <>
-      <ContentContainer design="rounded-md w-[900px] max-h-[549px] p-8 overflow-y-auto ml-56 ">
-        <ViewBlog id={id} />
+      <ContentContainer design="rounded-md w-full max-h-[549px] p-8 overflow-y-auto">
+        <ViewBlog id={parameter.id} />
       </ContentContainer>
     </>
   );

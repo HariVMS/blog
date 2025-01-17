@@ -1,81 +1,81 @@
-"use client";
-import Link from "next/link";
-import { useContext, useState, useEffect, useRef } from "react";
-import { UserContext } from "@/Components/HomeContainer";
-import InputBox from "./ReusableComponent/InputBox";
+'use client';
+import Link from 'next/link';
+import { useContext, useState, useEffect, useRef } from 'react';
+import { UserContext } from '@/Components/HomeContainer';
+import InputBox from './ReusableComponent/InputBox';
+import ErrorContainer from './ErrorContainer';
+import { Item } from '@/interface/interface';
 
-const BlogPage = () => {
+const CreateBlog = () => {
   const userBlogData = useContext(UserContext);
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState('');
   const [blogData, setBlogData] = useState<Item[]>([]);
   const [errors, setErrors] = useState({
-    author: "",
-    email: "",
-    phone: "",
-    gender: "",
-    title: "",
-    descriptions: "",
-    img: "",
+    author: '',
+    email: '',
+    phone: '',
+    gender: '',
+    title: '',
+    descriptions: '',
+    img: '',
   });
+
   const formRef = useRef<HTMLFormElement | null>(null);
-  const submitButtonDesgin =
-    "bg-blue-600 mt-2 p-2 rounded-md text-white  h-11 w-28";
+  const submitButtonDesign =
+    'bg-blue-600 mt-2 p-2 rounded-md text-white h-11 w-28';
+
   if (!userBlogData) {
-    throw new Error("UserContext must be used within a UserContext.Provider");
+    throw new Error('UserContext must be used within a UserContext.Provider');
   }
+
   useEffect(() => {
     if (blogData.length > 0) {
       userBlogData.setData(blogData);
     }
   }, [blogData, userBlogData]);
 
-  const validateForm = (formData: FormData) => {
-    let isValid = true;
+  const validateField = (field: string, value: string): string => {
+    switch (field) {
+      case 'author':
+        return value ? '' : 'Author is required.';
+      case 'email':
+        return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)
+          ? ''
+          : 'Enter a valid email.';
+      case 'phone':
+        return value.length === 10 ? '' : 'Phone number must be 10 digits.';
+      case 'gender':
+        return value ? '' : 'Gender is required.';
+      case 'title':
+        return value ? '' : 'Title is required.';
+      case 'descriptions':
+        return value ? '' : 'Description is required.';
+      case 'img':
+        return value ? '' : 'Image URL is required.';
+      default:
+        return '';
+    }
+  };
+
+  const handleFieldChange = (field: string, value: string) => {
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [field]: validateField(field, value),
+    }));
+  };
+
+  const validateForm = (formData: FormData): boolean => {
     const newErrors = { ...errors };
+    let isValid = true;
+
     Object.keys(newErrors).forEach((key) => {
-      (newErrors as { [key: string]: string })[key] = "";
+      const value = formData.get(key) as string;
+      const error = validateField(key, value);
+      if (error) {
+        isValid = false;
+      }
+      newErrors[key as keyof typeof errors] = error;
     });
-    const author = formData.get("author") as string;
-    if (!author) {
-      newErrors.author = "Author is required.";
-      isValid = false;
-    }
-
-    const email = formData.get("email") as string;
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!email || !emailRegex.test(email)) {
-      newErrors.email = "Enter a valid email.";
-      isValid = false;
-    }
-
-    const phone = formData.get("phone") as string;
-    if (!phone || phone.length < 10) {
-      newErrors.phone = "Phone number should be at least 10 digits.";
-      isValid = false;
-    }
-
-    const gender = formData.get("gender") as string;
-    if (!gender) {
-      newErrors.gender = "Gender is required.";
-      isValid = false;
-    }
-
-    const title = formData.get("title") as string;
-    if (!title) {
-      newErrors.title = "Title is required.";
-      isValid = false;
-    }
-
-    const descriptions = formData.get("descriptions") as string;
-    if (!descriptions) {
-      newErrors.descriptions = "Description is required.";
-      isValid = false;
-    }
-    const img = formData.get("img") as string;
-    if (!img) {
-      newErrors.img = "Image URL is required.";
-      isValid = false;
-    }
 
     setErrors(newErrors);
     return isValid;
@@ -87,35 +87,32 @@ const BlogPage = () => {
 
     if (validateForm(formData)) {
       const formObject: Item = {
-        author: formData.get("author") as string,
-        email: formData.get("email") as string,
-        phone: formData.get("phone") as string,
-        gender: formData.get("gender") as string,
-        title: formData.get("title") as string,
-        descriptions: formData.get("descriptions") as string,
-        img: formData.get("img") as string,
+        author: formData.get('author') as string,
+        email: formData.get('email') as string,
+        phone: formData.get('phone') as string,
+        gender: formData.get('gender') as string,
+        title: formData.get('title') as string,
+        descriptions: formData.get('descriptions') as string,
+        img: formData.get('img') as string,
       };
 
-      setBlogData((prevBlogData) => {
-        const updatedBlogData = [...prevBlogData, formObject];
-        return updatedBlogData;
-      });
-      alert("Added Successfully. Please go to Home.");
+      setBlogData((prevBlogData) => [...prevBlogData, formObject]);
+      alert('Added Successfully. Please go to Home.');
     }
   };
 
-  const handelClearData = () => {
+  const handleClearData = () => {
     if (formRef.current) {
       formRef.current.reset();
-      setDescription("");
+      setDescription('');
       setErrors({
-        author: "",
-        email: "",
-        phone: "",
-        gender: "",
-        title: "",
-        descriptions: "",
-        img: "",
+        author: '',
+        email: '',
+        phone: '',
+        gender: '',
+        title: '',
+        descriptions: '',
+        img: '',
       });
     }
   };
@@ -124,109 +121,74 @@ const BlogPage = () => {
     <>
       <h3 className="text-4xl font-bold">Create Your Blog</h3>
       <form
+        noValidate
         className="flex flex-col gap-2 w-full"
         ref={formRef}
         onSubmit={handleInputSubmit}
       >
         <label htmlFor="author">Author :</label>
         <InputBox
-          boxName="author"
+          name="author"
           id="author"
           placeholder="Author"
-          onChange={(e) => {
-            setErrors((prevErrors) => ({
-              ...prevErrors,
-              author: "",
-            }));
-          }}
+          onChange={(e) => handleFieldChange('author', e.target.value)}
+          error={errors.author ? true : false}
         />
-        {errors.author && <span className="text-red-600">{errors.author}</span>}
+        <ErrorContainer error={errors.author} />
 
         <label htmlFor="email">Email :</label>
         <InputBox
           type="email"
-          boxName="email"
+          name="email"
           id="email"
           placeholder="Email"
-          onChange={(e) => {
-            setErrors((prevErrors) => ({
-              ...prevErrors,
-              email: "", 
-            }));
-          }}
+          onChange={(e) => handleFieldChange('email', e.target.value)}
+          error={errors.email ? true : false}
         />
-        {errors.email && <span className="text-red-600">{errors.email}</span>}
-
+        <ErrorContainer error={errors.email} />
         <label htmlFor="phone">Phone:</label>
         <InputBox
           type="number"
-          boxName="phone"
+          name="phone"
           id="phone"
           placeholder="Phone"
-          onChange={(e) => {
-            const phoneValue = e.target.value;
-
-            setErrors((prevErrors) => ({
-              ...prevErrors,
-              phone: "",
-            }));
-
-            if (phoneValue.length < 10) {
-              setErrors((prevErrors) => ({
-                ...prevErrors,
-                phone: "Phone number should be at least 10 digits.",
-              }));
-            }
-          }}
+          onChange={(e) => handleFieldChange('phone', e.target.value)}
+          error={errors.phone ? true : false}
         />
-        {errors.phone && <span className="text-red-600">{errors.phone}</span>}
+        <ErrorContainer error={errors.phone} />
 
         <label htmlFor="gender">Gender</label>
         <div className="flex p-3 gap-3">
           <InputBox
             type="radio"
-            boxName="gender"
+            name="gender"
             id="male"
             value="male"
             placeholder="Male"
-            onChange={(e) => {
-              setErrors((prevErrors) => ({
-                ...prevErrors,
-                gender: "",
-              }));
-            }}
+            onChange={(e) => handleFieldChange('gender', e.target.value)}
+            error={errors.gender ? true : false}
           />
           <label htmlFor="male">Male</label>
           <InputBox
             type="radio"
-            boxName="gender"
+            name="gender"
             id="female"
             value="female"
             placeholder="Female"
-            onChange={(e) => {
-              setErrors((prevErrors) => ({
-                ...prevErrors,
-                gender: "", 
-              }));
-            }}
+            onChange={(e) => handleFieldChange('gender', e.target.value)}
           />
-          <label htmlFor="male">Female</label>
+          <label htmlFor="female">Female</label>
         </div>
-        {errors.gender && <span className="text-red-600">{errors.gender}</span>}
-
+        <ErrorContainer error={errors.gender} />
         <label htmlFor="title">Title :</label>
         <InputBox
-          boxName="title"
+          name="title"
           id="title"
           placeholder="Title"
-          onChange={(e) => {
-            setErrors((prevErrors) => ({
-              ...prevErrors,
-              title: "", 
-            }));
-          }}
+          onChange={(e) => handleFieldChange('title', e.target.value)}
+          error={errors.title ? true : false}
         />
-        {errors.title && <span className="text-red-600">{errors.title}</span>}
+        <ErrorContainer error={errors.title} />
 
         <label htmlFor="descriptions">Description :</label>
         <textarea
@@ -236,43 +198,34 @@ const BlogPage = () => {
           value={description}
           onChange={(e) => {
             setDescription(e.target.value);
-            setErrors((prevErrors) => ({
-              ...prevErrors,
-              descriptions: "", 
-            }));
+            handleFieldChange('descriptions', e.target.value);
           }}
           placeholder="Description"
         ></textarea>
-        {errors.descriptions && (
-          <span className="text-red-600">{errors.descriptions}</span>
-        )}
+        <ErrorContainer error={errors.descriptions} />
 
         <label htmlFor="img">Image URL :</label>
         <InputBox
           type="url"
-          boxName="img"
+          name="img"
           id="img"
           placeholder="Image URL"
-          onChange={(e) => {
-            setErrors((prevErrors) => ({
-              ...prevErrors,
-              img: "", 
-            }));
-          }}
+          onChange={(e) => handleFieldChange('img', e.target.value)}
+          error={errors.img ? true : false}
         />
-        {errors.img && <span className="text-red-600">{errors.img}</span>}
+        <ErrorContainer error={errors.img} />
 
         <div className="flex gap-6">
-          <button className={submitButtonDesgin}>Add Data</button>
+          <button className={submitButtonDesign}>Add Data</button>
           <Link href="/view-blog">
-            <button type="button" className={submitButtonDesgin}>
+            <button type="button" className={submitButtonDesign}>
               Home
             </button>
           </Link>
           <button
             type="button"
-            className={submitButtonDesgin}
-            onClick={handelClearData}
+            className={submitButtonDesign}
+            onClick={handleClearData}
           >
             Clear All
           </button>
@@ -282,4 +235,4 @@ const BlogPage = () => {
   );
 };
 
-export default BlogPage;
+export default CreateBlog;

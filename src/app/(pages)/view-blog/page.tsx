@@ -1,5 +1,5 @@
-import ContentContainer from "@/Components/ContentContainer";
-import { DataContainer } from "@/Components/DataContainer";
+import ContentContainer from '@/Components/ContentContainer';
+import { DataContainer } from '@/Components/DataContainer';
 
 const home = () => {
   return (

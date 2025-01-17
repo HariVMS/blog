@@ -1,11 +1,11 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
         protocol: 'https', // Allow only secure sources
-        hostname: '**',    // Wildcard to match any domain
+        hostname: '**', // Wildcard to match any domain
       },
     ],
   },

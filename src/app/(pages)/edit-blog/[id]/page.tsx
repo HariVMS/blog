@@ -1,11 +1,12 @@
-import ContentContainer from "@/Components/ContentContainer";
-import EditBlog from "@/Components/EditBLog";
+import ContentContainer from '@/Components/ContentContainer';
+import EditBlog from '@/Components/EditBlog';
 
-const editBlog = async ({ params }: { params: { id: string } }) => {
+const editBlog = async ({ params }: { params: Promise<{ id: string }> }) => {
+  const parameter = await params;
   return (
     <>
       <ContentContainer design={null}>
-        <EditBlog id={params.id} />
+        <EditBlog id={parameter.id} />
       </ContentContainer>
     </>
   );

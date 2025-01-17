@@ -1,6 +1,6 @@
-import React from "react";
-import HomeContainer from "@/Components/HomeContainer";
-import NavBar from "@/Components/NavBar";
+import React from 'react';
+import HomeContainer from '@/Components/HomeContainer';
+import NavBar from '@/Components/NavBar';
 
 const dashBoard = ({ children }: { children: React.ReactNode }) => {
   return (
