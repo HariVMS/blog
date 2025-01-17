@@ -1,17 +1,20 @@
-interface Item {
+export interface Item {
   author: string;
+  email: string;
+  phone: string;
+  gender: string;
   title: string;
   descriptions: string;
   img: string;
 }
-interface UserContextType {
+export interface UserContextType {
   data: Item[];
   setData: React.Dispatch<React.SetStateAction<Item[]>>;
   setCss: React.Dispatch<React.SetStateAction<{ [key: string]: string }>>;
   css: { [key: string]: string };
 }
 
-interface UserContextType {
+export interface UserContextDataCssType {
   data: Item[];
   css: { [key: string]: string };
 }

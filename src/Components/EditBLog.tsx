@@ -1,15 +1,24 @@
 'use client';
+import { useContext, useState } from 'react';
 import Link from 'next/link';
-import { useContext, useState, useEffect, useRef } from 'react';
-import { UserContext } from '@/Components/HomeContainer';
+import { UserContext } from './HomeContainer';
 import InputBox from './ReusableComponent/InputBox';
 import ErrorContainer from './ErrorContainer';
-import { Item } from '@/interface/interface';
 
-const CreateBlog = () => {
+const EditBlog = ({ id }: { id: string }) => {
   const userBlogData = useContext(UserContext);
-  const [description, setDescription] = useState('');
-  const [blogData, setBlogData] = useState<Item[]>([]);
+
+  if (!userBlogData) {
+    throw new Error('UserContext must be used within a UserContext.Provider');
+  }
+  const blogDatas = userBlogData.data[Number(id)];
+  const [author, setAuthor] = useState(blogDatas.author || ' ');
+  const [email, setEmail] = useState(blogDatas.email || '');
+  const [phone, setPhone] = useState(blogDatas.phone || '');
+  const [gender, setGender] = useState(blogDatas.gender || '');
+  const [title, setTitle] = useState(blogDatas.title || '');
+  const [description, setDescription] = useState(blogDatas.descriptions || '');
+  const [img, setImg] = useState(blogDatas.img || '');
   const [errors, setErrors] = useState({
     author: '',
     email: '',
@@ -19,20 +28,26 @@ const CreateBlog = () => {
     descriptions: '',
     img: '',
   });
-
-  const formRef = useRef<HTMLFormElement | null>(null);
-  const submitButtonDesign =
-    'bg-blue-600 mt-2 p-2 rounded-md text-white h-11 w-28';
-
-  if (!userBlogData) {
-    throw new Error('UserContext must be used within a UserContext.Provider');
+  if (!blogDatas) {
+    return <div className="text-center text-gray-600">Blog post not found</div>;
   }
 
-  useEffect(() => {
-    if (blogData.length > 0) {
-      userBlogData.setData(blogData);
-    }
-  }, [blogData, userBlogData]);
+  const submitButtonDesign = `
+    bg-blue-600 
+    hover:bg-blue-700 
+    focus:ring-4 
+    focus:ring-blue-300 
+    focus:outline-none 
+    mt-2 
+    p-3 
+    rounded-lg 
+    text-white 
+    font-semibold 
+    text-sm 
+    transition-all 
+    duration-200 
+    ease-in-out
+`;
 
   const validateField = (field: string, value: string): string => {
     switch (field) {
@@ -84,46 +99,31 @@ const CreateBlog = () => {
   const handleInputSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-
     if (validateForm(formData)) {
-      const formObject: Item = {
-        author: formData.get('author') as string,
-        email: formData.get('email') as string,
-        phone: formData.get('phone') as string,
-        gender: formData.get('gender') as string,
-        title: formData.get('title') as string,
-        descriptions: formData.get('descriptions') as string,
-        img: formData.get('img') as string,
+      const updatedBlog = {
+        author,
+        email,
+        phone,
+        gender,
+        title,
+        descriptions: description,
+        img,
       };
+      const updatedBlogs = [...userBlogData.data];
+      updatedBlogs[Number(id)] = updatedBlog;
 
-      setBlogData((prevBlogData) => [...prevBlogData, formObject]);
-      alert('Added Successfully. Please go to Home.');
-    }
-  };
+      userBlogData.setData(updatedBlogs);
 
-  const handleClearData = () => {
-    if (formRef.current) {
-      formRef.current.reset();
-      setDescription('');
-      setErrors({
-        author: '',
-        email: '',
-        phone: '',
-        gender: '',
-        title: '',
-        descriptions: '',
-        img: '',
-      });
+      alert('Modified Successfully! Please Go To Home');
     }
   };
 
   return (
     <>
-      <h3 className="text-4xl font-bold">Create Your Blog</h3>
+      <h3 className="text-4xl font-bold">Edit Your Blog</h3>
       <form
         noValidate
         className="flex flex-col gap-2 w-full"
-        ref={formRef}
         onSubmit={handleInputSubmit}
       >
         <label htmlFor="author">Author :</label>
@@ -131,7 +131,11 @@ const CreateBlog = () => {
           name="author"
           id="author"
           placeholder="Author"
-          onChange={(e) => handleFieldChange('author', e.target.value)}
+          value={author}
+          onChange={(e) => {
+            setAuthor(e.target.value);
+            handleFieldChange('author', e.target.value);
+          }}
           error={errors.author ? true : false}
         />
         <ErrorContainer error={errors.author} />
@@ -142,7 +146,11 @@ const CreateBlog = () => {
           name="email"
           id="email"
           placeholder="Email"
-          onChange={(e) => handleFieldChange('email', e.target.value)}
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            handleFieldChange('email', e.target.value);
+          }}
           error={errors.email ? true : false}
         />
         <ErrorContainer error={errors.email} />
@@ -152,11 +160,14 @@ const CreateBlog = () => {
           name="phone"
           id="phone"
           placeholder="Phone"
-          onChange={(e) => handleFieldChange('phone', e.target.value)}
+          value={phone}
+          onChange={(e) => {
+            setPhone(e.target.value);
+            handleFieldChange('phone', e.target.value);
+          }}
           error={errors.phone ? true : false}
         />
         <ErrorContainer error={errors.phone} />
-
         <label htmlFor="gender">Gender</label>
         <div className="flex p-3 gap-3">
           <InputBox
@@ -164,9 +175,8 @@ const CreateBlog = () => {
             name="gender"
             id="male"
             value="male"
-            placeholder="Male"
-            onChange={(e) => handleFieldChange('gender', e.target.value)}
-            error={errors.gender ? true : false}
+            checked={gender === 'male'}
+            onChange={(e) => setGender(e.target.value)}
           />
           <label htmlFor="male">Male</label>
           <InputBox
@@ -174,8 +184,8 @@ const CreateBlog = () => {
             name="gender"
             id="female"
             value="female"
-            placeholder="Female"
-            onChange={(e) => handleFieldChange('gender', e.target.value)}
+            checked={gender === 'female'}
+            onChange={(e) => setGender(e.target.value)}
           />
           <label htmlFor="female">Female</label>
         </div>
@@ -185,7 +195,11 @@ const CreateBlog = () => {
           name="title"
           id="title"
           placeholder="Title"
-          onChange={(e) => handleFieldChange('title', e.target.value)}
+          value={title}
+          onChange={(e) => {
+            setTitle(e.target.value);
+            handleFieldChange('title', e.target.value);
+          }}
           error={errors.title ? true : false}
         />
         <ErrorContainer error={errors.title} />
@@ -203,31 +217,30 @@ const CreateBlog = () => {
           placeholder="Description"
         ></textarea>
         <ErrorContainer error={errors.descriptions} />
-
         <label htmlFor="img">Image URL :</label>
         <InputBox
           type="url"
           name="img"
           id="img"
           placeholder="Image URL"
-          onChange={(e) => handleFieldChange('img', e.target.value)}
+          value={img}
+          onChange={(e) => {
+            setImg(e.target.value);
+            handleFieldChange('img', e.target.value);
+          }}
           error={errors.img ? true : false}
         />
         <ErrorContainer error={errors.img} />
 
         <div className="flex gap-6">
-          <button className={submitButtonDesign}>Add Data</button>
+          <button className={submitButtonDesign}>Save</button>
           <Link href="/view-blog">
             <button type="button" className={submitButtonDesign}>
               Home
             </button>
           </Link>
-          <button
-            type="button"
-            className={submitButtonDesign}
-            onClick={handleClearData}
-          >
-            Clear All
+          <button className={submitButtonDesign}>
+            <Link href={`/blog-details/${id}`}>View More</Link>
           </button>
         </div>
       </form>
@@ -235,4 +248,4 @@ const CreateBlog = () => {
   );
 };
 
-export default CreateBlog;
+export default EditBlog;

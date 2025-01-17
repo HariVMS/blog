@@ -1,9 +1,7 @@
-import React from "react";
-import "./globals.css";
-import NavBar from "../Components/NavBar";
-import HomeContainer from "../Components/HomeContainer";
+import React from 'react';
+import './globals.css';
 
-export default function Dash({ children }: { children: React.ReactNode }) {
+const layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
       <html lang="en">
@@ -13,14 +11,12 @@ export default function Dash({ children }: { children: React.ReactNode }) {
             content="width=device-width, initial-scale=1.0"
           />
           <title>MyBlog</title>
+          <link rel="icon" type="image/png" href="/assets/blog.png" />
         </head>
-        <body>
-          <div className="main-container h-lvh flex flex-col">
-            <NavBar />
-            <HomeContainer>{children}</HomeContainer>
-          </div>
-        </body>
+        <body>{children}</body>
       </html>
     </>
   );
-}
+};
+
+export default layout;
