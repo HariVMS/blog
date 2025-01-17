@@ -11,7 +11,8 @@ const EditBlog = ({ id }: { id: string }) => {
   if (!userBlogData) {
     throw new Error('UserContext must be used within a UserContext.Provider');
   }
-  const blogDatas = userBlogData.data[Number(id)];
+  const blogIndex = userBlogData.data.findIndex((blog) => blog.id === id);
+  const blogDatas = userBlogData.data[blogIndex];
   const [author, setAuthor] = useState(blogDatas.author || ' ');
   const [email, setEmail] = useState(blogDatas.email || '');
   const [phone, setPhone] = useState(blogDatas.phone || '');
@@ -101,6 +102,7 @@ const EditBlog = ({ id }: { id: string }) => {
     const formData = new FormData(event.currentTarget);
     if (validateForm(formData)) {
       const updatedBlog = {
+        id,
         author,
         email,
         phone,
@@ -110,7 +112,7 @@ const EditBlog = ({ id }: { id: string }) => {
         img,
       };
       const updatedBlogs = [...userBlogData.data];
-      updatedBlogs[Number(id)] = updatedBlog;
+      updatedBlogs[blogIndex] = updatedBlog;
 
       userBlogData.setData(updatedBlogs);
 

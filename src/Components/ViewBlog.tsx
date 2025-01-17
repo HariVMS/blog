@@ -12,7 +12,7 @@ const ViewBlog = ({ id }: { id: string }) => {
     throw new Error('UserContext is not provided!');
   }
   const { data, css }: UserContextDataCssType = userContextData;
-  const blogData = data[Number(id)];
+  const blogData = data.find((blog) => blog.id === id);
 
   if (!blogData) {
     return <div className="text-center text-gray-600">Blog post not found</div>;
@@ -54,7 +54,7 @@ const ViewBlog = ({ id }: { id: string }) => {
           </div>
           <div className="flex justify-around pt-14">
             <button className={css.readButton}>
-              <Link href={`/edit-blog/${id}`}>Edit</Link>
+              <Link href={`/edit-blog/${blogData.id}`}>Edit</Link>
             </button>
             <button className={css.readButton}>
               <Link href={`/view-blog`}>Home</Link>

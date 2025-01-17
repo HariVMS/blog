@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import { v4 as uuidv4 } from 'uuid';
 import { useContext, useState, useEffect, useRef } from 'react';
 import { UserContext } from '@/Components/HomeContainer';
 import InputBox from './ReusableComponent/InputBox';
@@ -87,6 +88,7 @@ const CreateBlog = () => {
 
     if (validateForm(formData)) {
       const formObject: Item = {
+        id: uuidv4(),
         author: formData.get('author') as string,
         email: formData.get('email') as string,
         phone: formData.get('phone') as string,
