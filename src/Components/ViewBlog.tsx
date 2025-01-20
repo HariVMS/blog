@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React, { useContext } from 'react';
 import { UserContext } from './HomeContainer';
-import { UserContextDataCssType } from '@/interface/interface';
+import { UserContextDataCssType } from '@/interface/Interface';
 
 const ViewBlog = ({ id }: { id: string }) => {
   const currentDate = new Date().toLocaleDateString();
