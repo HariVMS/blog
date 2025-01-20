@@ -219,7 +219,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ mode, id }) => {
         <ErrorContainer error={errors.phone} />
 
         <label htmlFor="gender">Gender</label>
-        <div className="flex p-3 gap-3">
+        <div className="flex p-3 gap-3 cursor-pointer">
           <InputBox
             type="radio"
             name="gender"
@@ -230,7 +230,9 @@ const BlogForm: React.FC<BlogFormProps> = ({ mode, id }) => {
             onChange={(e) => handleFieldChange('gender', e.target.value)}
             error={errors.gender ? true : false}
           />
-          <label htmlFor="male">Male</label>
+          <label htmlFor="male" className="cursor-pointer">
+            Male
+          </label>
           <InputBox
             type="radio"
             name="gender"
@@ -240,7 +242,9 @@ const BlogForm: React.FC<BlogFormProps> = ({ mode, id }) => {
             checked={blogData.gender === 'female'}
             onChange={(e) => handleFieldChange('gender', e.target.value)}
           />
-          <label htmlFor="female">Female</label>
+          <label htmlFor="female" className="cursor-pointer">
+            Female
+          </label>
         </div>
         <ErrorContainer error={errors.gender} />
         <label htmlFor="title">Title :</label>
