@@ -6,7 +6,7 @@ import { UserContext } from '@/Components/HomeContainer';
 import InputBox from './ReusableComponent/InputBox';
 import ErrorContainer from './ErrorContainer';
 import { BlogFormProps } from '@/interface/BlogForm';
-import { Item } from '@/interface/Interface';
+import { Item } from '@/interface';
 
 const BlogForm: React.FC<BlogFormProps> = ({ mode, id }) => {
   const userBlogData = useContext(UserContext);

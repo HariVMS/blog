@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, createContext } from 'react';
-import { UserContextType, Item } from '@/interface/Interface';
+import { UserContextType, Item } from '@/interface';
 
 export const UserContext = createContext<UserContextType | null>(null);
 

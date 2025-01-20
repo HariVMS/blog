@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { UserContext } from './HomeContainer';
 import DeletePopup from './DeletePopup';
 import EmptyBlogContainer from './EmptyBlogContainer';
-import { Item } from '@/interface/Interface';
+import { Item } from '@/interface';
 
 export const DataContainer = () => {
   const currentDate = new Date().toLocaleDateString();
