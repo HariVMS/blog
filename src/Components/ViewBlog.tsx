@@ -25,9 +25,9 @@ const ViewBlog = ({ id }: { id: string }) => {
   ];
 
   return (
-    <div className="w-full bg-white shadow-lg rounded-lg overflow-hidden p-6">
+    <div className="w-full bg-white shadow-lg rounded-lg overflow-hidden p-6 ">
       <Image
-        className="rounded-md ml-[190px]"
+        className="rounded-md ml-[190px] sm:ml-auto md:ml-auto lg:ml-auto xl:ml-[12%] 2xl:ml-[15%] min-[1800px]:ml-[20%]"
         src={blogData.img}
         alt="Blog Image"
         width={1000}

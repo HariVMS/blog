@@ -10,19 +10,20 @@ const InputBox: React.FC<InputProperties> = ({
   checked,
   onChange,
   error,
+  onBlur,
 }) => {
   return (
     <input
       className={
         type !== 'radio' && type !== 'checkbox'
-          ? `border rounded-md px-2 py-2 text-gray-700 focus:outline-none 
+          ? `border rounded-md px-2 py-2 text-gray-700 focus:outline-none cursor-pointer 
              focus:ring-2 ${
                error ? 'focus:ring-red-500' : 'focus:ring-blue-500/40'
              } 
              focus:border-blue-400 ${
                error ? 'border-red-500 focus:border-red-500' : ''
              }`
-          : 'border rounded-md px-3 py-3 text-gray-700 focus:outline-none'
+          : 'border rounded-md px-3 py-3 text-gray-700 focus:outline-none cursor-pointer '
       }
       type={type}
       name={name}
@@ -31,6 +32,7 @@ const InputBox: React.FC<InputProperties> = ({
       value={value}
       checked={checked}
       onChange={onChange}
+      onBlur={onBlur}
     />
   );
 };

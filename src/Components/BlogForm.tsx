@@ -51,6 +51,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ mode, id }) => {
   focus:ring-4 
   focus:ring-blue-300 
   focus:outline-none 
+  cursor-pointer
   mt-2 
   p-3 
   rounded-lg 
@@ -86,17 +87,22 @@ const BlogForm: React.FC<BlogFormProps> = ({ mode, id }) => {
   };
 
   const handleFieldChange = (field: string, value: string) => {
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      [field]: validateField(field, value),
-    }));
-
     setBlogData((prevData) => ({
       ...prevData,
       [field]: value,
     }));
+    if (value.length != 0) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [field]: validateField(field, value),
+      }));
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [field]: '',
+      }));
+    }
   };
-
   const validateForm = (formData: FormData): boolean => {
     const newErrors = { ...errors };
     let isValid = true;
@@ -250,7 +256,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ mode, id }) => {
 
         <label htmlFor="descriptions">Description :</label>
         <textarea
-          className="border rounded-md px-3 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-400"
+          className="border rounded-md px-3 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/40 cursor-pointer focus:border-blue-400"
           name="descriptions"
           id="descriptions"
           value={blogData.descriptions}

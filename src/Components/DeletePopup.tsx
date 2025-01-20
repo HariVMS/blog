@@ -7,7 +7,7 @@ const DeletePopup: React.FC<DeletePopupProps> = ({
 }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-center">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-center min-[1800px]:w-[30%] min-[1800px]:p-10">
         <h2 className="text-lg font-semibold mb-4">Are you sure?</h2>
         <p className="text-gray-600 mb-6">
           Do you really want to delete this item? This action cannot be undone.

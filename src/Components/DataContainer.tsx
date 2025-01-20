@@ -21,7 +21,7 @@ export const DataContainer = () => {
 
   const design = {
     parentContainer:
-      'flex-wrap bg-slate-200 basis-[calc(33.333%-14px)] min-w-[150px] h-[515px] flex flex-col box-border border-gray-400 border-2 rounded-lg',
+      'flex-wrap bg-slate-200 basis-[calc(33.333%-14px)] min-w-[150px] h-[515px] flex flex-col box-border border-gray-400 border-2 rounded-lg sm:min-w-[570px] md:min-w-[695px] lg:min-w-[456px] xl:min-w-[570px]',
     childContainer: ' flex flex-col gap-4 p-3 h-full',
     img: 'h-80 rounded-lg w-full border-2 border-gray-400 rounded-3xl',
     readButton:

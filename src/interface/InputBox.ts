@@ -16,4 +16,5 @@ export interface InputProperties {
   checked?: boolean;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   error?: boolean;
+  onBlur?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
