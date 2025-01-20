@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React, { useContext } from 'react';
 import { UserContext } from './HomeContainer';
-import { UserContextDataCssType } from '@/interface/interface';
+import { UserContextDataCssType } from '@/interface';
 
 const ViewBlog = ({ id }: { id: string }) => {
   const currentDate = new Date().toLocaleDateString();
@@ -12,7 +12,7 @@ const ViewBlog = ({ id }: { id: string }) => {
     throw new Error('UserContext is not provided!');
   }
   const { data, css }: UserContextDataCssType = userContextData;
-  const blogData = data[Number(id)];
+  const blogData = data.find((blog) => blog.id === id);
 
   if (!blogData) {
     return <div className="text-center text-gray-600">Blog post not found</div>;
@@ -25,9 +25,9 @@ const ViewBlog = ({ id }: { id: string }) => {
   ];
 
   return (
-    <div className="w-full bg-white shadow-lg rounded-lg overflow-hidden p-6">
+    <div className="w-full bg-white shadow-lg rounded-lg overflow-hidden p-6 ">
       <Image
-        className="rounded-md ml-[190px]"
+        className="rounded-md ml-[190px] sm:ml-auto md:ml-auto lg:ml-auto xl:ml-[12%] 2xl:ml-[15%] min-[1800px]:ml-[20%]"
         src={blogData.img}
         alt="Blog Image"
         width={1000}
@@ -54,7 +54,7 @@ const ViewBlog = ({ id }: { id: string }) => {
           </div>
           <div className="flex justify-around pt-14">
             <button className={css.readButton}>
-              <Link href={`/edit-blog/${id}`}>Edit</Link>
+              <Link href={`/edit-blog/${blogData.id}`}>Edit</Link>
             </button>
             <button className={css.readButton}>
               <Link href={`/view-blog`}>Home</Link>

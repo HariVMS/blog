@@ -1,4 +1,5 @@
 export interface Item {
+  id: string;
   author: string;
   email: string;
   phone: string;

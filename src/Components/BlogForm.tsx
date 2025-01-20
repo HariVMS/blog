@@ -1,24 +1,38 @@
 'use client';
-import { useContext, useState } from 'react';
 import Link from 'next/link';
-import { UserContext } from './HomeContainer';
+import { v4 as uuidv4 } from 'uuid';
+import { useContext, useState, useRef } from 'react';
+import { UserContext } from '@/Components/HomeContainer';
 import InputBox from './ReusableComponent/InputBox';
 import ErrorContainer from './ErrorContainer';
+import { BlogFormProps } from '@/interface/BlogForm';
+import { Item } from '@/interface';
 
-const EditBlog = ({ id }: { id: string }) => {
+const BlogForm: React.FC<BlogFormProps> = ({ mode, id }) => {
   const userBlogData = useContext(UserContext);
-
   if (!userBlogData) {
     throw new Error('UserContext must be used within a UserContext.Provider');
   }
-  const blogDatas = userBlogData.data[Number(id)];
-  const [author, setAuthor] = useState(blogDatas.author || ' ');
-  const [email, setEmail] = useState(blogDatas.email || '');
-  const [phone, setPhone] = useState(blogDatas.phone || '');
-  const [gender, setGender] = useState(blogDatas.gender || '');
-  const [title, setTitle] = useState(blogDatas.title || '');
-  const [description, setDescription] = useState(blogDatas.descriptions || '');
-  const [img, setImg] = useState(blogDatas.img || '');
+
+  const isEditMode = mode === 'edit';
+
+  const blogIndex = isEditMode
+    ? userBlogData.data.findIndex((blog) => blog.id === id)
+    : -1;
+
+  const existingBlog =
+    isEditMode && blogIndex >= 0 ? userBlogData.data[blogIndex] : null;
+
+  const [blogData, setBlogData] = useState({
+    author: existingBlog?.author || '',
+    email: existingBlog?.email || '',
+    phone: existingBlog?.phone || '',
+    gender: existingBlog?.gender || '',
+    title: existingBlog?.title || '',
+    descriptions: existingBlog?.descriptions || '',
+    img: existingBlog?.img || '',
+  });
+
   const [errors, setErrors] = useState({
     author: '',
     email: '',
@@ -28,25 +42,25 @@ const EditBlog = ({ id }: { id: string }) => {
     descriptions: '',
     img: '',
   });
-  if (!blogDatas) {
-    return <div className="text-center text-gray-600">Blog post not found</div>;
-  }
+
+  const formRef = useRef<HTMLFormElement | null>(null);
 
   const submitButtonDesign = `
-    bg-blue-600 
-    hover:bg-blue-700 
-    focus:ring-4 
-    focus:ring-blue-300 
-    focus:outline-none 
-    mt-2 
-    p-3 
-    rounded-lg 
-    text-white 
-    font-semibold 
-    text-sm 
-    transition-all 
-    duration-200 
-    ease-in-out
+  bg-blue-600 
+  hover:bg-blue-700 
+  focus:ring-4 
+  focus:ring-blue-300 
+  focus:outline-none 
+  cursor-pointer
+  mt-2 
+  p-3 
+  rounded-lg 
+  text-white 
+  font-semibold 
+  text-sm 
+  transition-all 
+  duration-200 
+  ease-in-out
 `;
 
   const validateField = (field: string, value: string): string => {
@@ -73,18 +87,28 @@ const EditBlog = ({ id }: { id: string }) => {
   };
 
   const handleFieldChange = (field: string, value: string) => {
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      [field]: validateField(field, value),
+    setBlogData((prevData) => ({
+      ...prevData,
+      [field]: value,
     }));
+    if (value.length != 0) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [field]: validateField(field, value),
+      }));
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [field]: '',
+      }));
+    }
   };
-
   const validateForm = (formData: FormData): boolean => {
     const newErrors = { ...errors };
     let isValid = true;
 
     Object.keys(newErrors).forEach((key) => {
-      const value = formData.get(key) as string;
+      const value = (formData.get(key) as string) || '';
       const error = validateField(key, value);
       if (error) {
         isValid = false;
@@ -100,30 +124,64 @@ const EditBlog = ({ id }: { id: string }) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     if (validateForm(formData)) {
-      const updatedBlog = {
+      const { author, email, phone, gender, title, descriptions, img } =
+        blogData;
+      const newBlog: Item = {
+        id: isEditMode ? id! : uuidv4(),
         author,
         email,
         phone,
         gender,
         title,
-        descriptions: description,
+        descriptions: descriptions,
         img,
       };
-      const updatedBlogs = [...userBlogData.data];
-      updatedBlogs[Number(id)] = updatedBlog;
+
+      const updatedBlogs = isEditMode
+        ? userBlogData.data.map((blog) => (blog.id === id ? newBlog : blog))
+        : [...userBlogData.data, newBlog];
 
       userBlogData.setData(updatedBlogs);
 
-      alert('Modified Successfully! Please Go To Home');
+      alert(
+        `${isEditMode ? 'Modified' : 'Added'} Successfully! Please go to Home.`,
+      );
     }
+  };
+
+  const handleClearData = () => {
+    if (formRef.current) {
+      formRef.current.reset();
+    }
+    setBlogData({
+      author: '',
+      email: '',
+      phone: '',
+      gender: '',
+      title: '',
+      descriptions: '',
+      img: '',
+    });
+    setErrors({
+      author: '',
+      email: '',
+      phone: '',
+      gender: '',
+      title: '',
+      descriptions: '',
+      img: '',
+    });
   };
 
   return (
     <>
-      <h3 className="text-4xl font-bold">Edit Your Blog</h3>
+      <h3 className="text-4xl font-bold">
+        {isEditMode ? 'Edit Your Blog' : 'Create Your Blog'}
+      </h3>
       <form
         noValidate
         className="flex flex-col gap-2 w-full"
+        ref={formRef}
         onSubmit={handleInputSubmit}
       >
         <label htmlFor="author">Author :</label>
@@ -131,11 +189,8 @@ const EditBlog = ({ id }: { id: string }) => {
           name="author"
           id="author"
           placeholder="Author"
-          value={author}
-          onChange={(e) => {
-            setAuthor(e.target.value);
-            handleFieldChange('author', e.target.value);
-          }}
+          value={blogData.author}
+          onChange={(e) => handleFieldChange('author', e.target.value)}
           error={errors.author ? true : false}
         />
         <ErrorContainer error={errors.author} />
@@ -146,11 +201,8 @@ const EditBlog = ({ id }: { id: string }) => {
           name="email"
           id="email"
           placeholder="Email"
-          value={email}
-          onChange={(e) => {
-            setEmail(e.target.value);
-            handleFieldChange('email', e.target.value);
-          }}
+          value={blogData.email}
+          onChange={(e) => handleFieldChange('email', e.target.value)}
           error={errors.email ? true : false}
         />
         <ErrorContainer error={errors.email} />
@@ -160,34 +212,39 @@ const EditBlog = ({ id }: { id: string }) => {
           name="phone"
           id="phone"
           placeholder="Phone"
-          value={phone}
-          onChange={(e) => {
-            setPhone(e.target.value);
-            handleFieldChange('phone', e.target.value);
-          }}
+          value={blogData.phone}
+          onChange={(e) => handleFieldChange('phone', e.target.value)}
           error={errors.phone ? true : false}
         />
         <ErrorContainer error={errors.phone} />
+
         <label htmlFor="gender">Gender</label>
-        <div className="flex p-3 gap-3">
+        <div className="flex p-3 gap-3 cursor-pointer">
           <InputBox
             type="radio"
             name="gender"
             id="male"
             value="male"
-            checked={gender === 'male'}
-            onChange={(e) => setGender(e.target.value)}
+            placeholder="Male"
+            checked={blogData.gender === 'male'}
+            onChange={(e) => handleFieldChange('gender', e.target.value)}
+            error={errors.gender ? true : false}
           />
-          <label htmlFor="male">Male</label>
+          <label htmlFor="male" className="cursor-pointer">
+            Male
+          </label>
           <InputBox
             type="radio"
             name="gender"
             id="female"
             value="female"
-            checked={gender === 'female'}
-            onChange={(e) => setGender(e.target.value)}
+            placeholder="Female"
+            checked={blogData.gender === 'female'}
+            onChange={(e) => handleFieldChange('gender', e.target.value)}
           />
-          <label htmlFor="female">Female</label>
+          <label htmlFor="female" className="cursor-pointer">
+            Female
+          </label>
         </div>
         <ErrorContainer error={errors.gender} />
         <label htmlFor="title">Title :</label>
@@ -195,57 +252,63 @@ const EditBlog = ({ id }: { id: string }) => {
           name="title"
           id="title"
           placeholder="Title"
-          value={title}
-          onChange={(e) => {
-            setTitle(e.target.value);
-            handleFieldChange('title', e.target.value);
-          }}
+          value={blogData.title}
+          onChange={(e) => handleFieldChange('title', e.target.value)}
           error={errors.title ? true : false}
         />
         <ErrorContainer error={errors.title} />
 
         <label htmlFor="descriptions">Description :</label>
         <textarea
-          className="border rounded-md px-3 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-400"
+          className="border rounded-md px-3 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/40 cursor-pointer focus:border-blue-400"
           name="descriptions"
           id="descriptions"
-          value={description}
+          value={blogData.descriptions}
           onChange={(e) => {
-            setDescription(e.target.value);
+            setBlogData(() => ({
+              ...blogData,
+              ['descriptions']: e.target.value,
+            }));
             handleFieldChange('descriptions', e.target.value);
           }}
           placeholder="Description"
         ></textarea>
         <ErrorContainer error={errors.descriptions} />
+
         <label htmlFor="img">Image URL :</label>
         <InputBox
           type="url"
           name="img"
           id="img"
           placeholder="Image URL"
-          value={img}
-          onChange={(e) => {
-            setImg(e.target.value);
-            handleFieldChange('img', e.target.value);
-          }}
+          value={blogData.img}
+          onChange={(e) => handleFieldChange('img', e.target.value)}
           error={errors.img ? true : false}
         />
         <ErrorContainer error={errors.img} />
 
         <div className="flex gap-6">
-          <button className={submitButtonDesign}>Save</button>
+          <button className={submitButtonDesign}>
+            {isEditMode ? 'Save' : 'Add Data'}
+          </button>
           <Link href="/view-blog">
             <button type="button" className={submitButtonDesign}>
               Home
             </button>
           </Link>
-          <button className={submitButtonDesign}>
-            <Link href={`/blog-details/${id}`}>View More</Link>
-          </button>
+          {mode === 'create' && (
+            <button
+              type="button"
+              className={submitButtonDesign}
+              onClick={handleClearData}
+            >
+              Clear All
+            </button>
+          )}
         </div>
       </form>
     </>
   );
 };
 
-export default EditBlog;
+export default BlogForm;

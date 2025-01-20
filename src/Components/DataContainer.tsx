@@ -5,13 +5,13 @@ import Image from 'next/image';
 import { UserContext } from './HomeContainer';
 import DeletePopup from './DeletePopup';
 import EmptyBlogContainer from './EmptyBlogContainer';
-import { Item } from '@/interface/interface';
+import { Item } from '@/interface';
 
 export const DataContainer = () => {
   const currentDate = new Date().toLocaleDateString();
   const userContext = useContext(UserContext);
   const [showPopup, setShowPopup] = useState(false);
-  const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
+  const [deleteIndex, setDeleteIndex] = useState<string | null>(null);
 
   if (!userContext) {
     throw new Error('UserContext must be used within a UserContext.Provider');
@@ -21,7 +21,7 @@ export const DataContainer = () => {
 
   const design = {
     parentContainer:
-      'flex-wrap bg-slate-200 basis-[calc(33.333%-14px)] min-w-[150px] h-[515px] flex flex-col box-border border-gray-400 border-2 rounded-lg',
+      'flex-wrap bg-slate-200 basis-[calc(33.333%-14px)] min-w-[150px] h-[515px] flex flex-col box-border border-gray-400 border-2 rounded-lg sm:min-w-[570px] md:min-w-[695px] lg:min-w-[456px] xl:min-w-[570px]',
     childContainer: ' flex flex-col gap-4 p-3 h-full',
     img: 'h-80 rounded-lg w-full border-2 border-gray-400 rounded-3xl',
     readButton:
@@ -38,14 +38,16 @@ export const DataContainer = () => {
 
   const handleDelete = () => {
     if (deleteIndex !== null) {
-      const updatedData = blogDatas.data.filter((_, i) => i !== deleteIndex);
+      const updatedData = blogDatas.data.filter(
+        (blog) => blog.id !== deleteIndex,
+      );
       blogDatas.setData(updatedData);
       setShowPopup(false);
       setDeleteIndex(null);
     }
   };
 
-  const openPopup = (index: number) => {
+  const openPopup = (index: string) => {
     setDeleteIndex(index);
     setShowPopup(true);
   };
@@ -92,14 +94,14 @@ export const DataContainer = () => {
             </div>
             <div className="read">
               <button className={design.readButton}>
-                <Link href={`/blog-details/${index}`}>Read More</Link>
+                <Link href={`/blog-details/${item.id}`}>Read More</Link>
               </button>
               <button className={design.readButton}>
-                <Link href={`/edit-blog/${index}`}>Edit</Link>
+                <Link href={`/edit-blog/${item.id}`}>Edit</Link>
               </button>
               <button
                 className={design.readButton}
-                onClick={() => openPopup(index)}
+                onClick={() => openPopup(item.id)}
               >
                 Delete
               </button>
