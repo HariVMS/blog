@@ -15,20 +15,24 @@ const BlogForm: React.FC<BlogFormProps> = ({ mode, id }) => {
   }
 
   const isEditMode = mode === 'edit';
+
   const blogIndex = isEditMode
     ? userBlogData.data.findIndex((blog) => blog.id === id)
     : -1;
+
   const existingBlog =
     isEditMode && blogIndex >= 0 ? userBlogData.data[blogIndex] : null;
-  const [author, setAuthor] = useState(existingBlog?.author || '');
-  const [email, setEmail] = useState(existingBlog?.email || '');
-  const [phone, setPhone] = useState(existingBlog?.phone || '');
-  const [gender, setGender] = useState(existingBlog?.gender || '');
-  const [title, setTitle] = useState(existingBlog?.title || '');
-  const [description, setDescription] = useState(
-    existingBlog?.descriptions || '',
-  );
-  const [img, setImg] = useState(existingBlog?.img || '');
+
+  const [blogData, setBlogData] = useState({
+    author: existingBlog?.author || '',
+    email: existingBlog?.email || '',
+    phone: existingBlog?.phone || '',
+    gender: existingBlog?.gender || '',
+    title: existingBlog?.title || '',
+    descriptions: existingBlog?.descriptions || '',
+    img: existingBlog?.img || '',
+  });
+
   const [errors, setErrors] = useState({
     author: '',
     email: '',
@@ -40,6 +44,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ mode, id }) => {
   });
 
   const formRef = useRef<HTMLFormElement | null>(null);
+
   const submitButtonDesign = `
   bg-blue-600 
   hover:bg-blue-700 
@@ -86,31 +91,10 @@ const BlogForm: React.FC<BlogFormProps> = ({ mode, id }) => {
       [field]: validateField(field, value),
     }));
 
-    switch (field) {
-      case 'author':
-        setAuthor(value);
-        break;
-      case 'email':
-        setEmail(value);
-        break;
-      case 'phone':
-        setPhone(value);
-        break;
-      case 'gender':
-        setGender(value);
-        break;
-      case 'title':
-        setTitle(value);
-        break;
-      case 'descriptions':
-        setDescription(value);
-        break;
-      case 'img':
-        setImg(value);
-        break;
-      default:
-        break;
-    }
+    setBlogData((prevData) => ({
+      ...prevData,
+      [field]: value,
+    }));
   };
 
   const validateForm = (formData: FormData): boolean => {
@@ -118,7 +102,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ mode, id }) => {
     let isValid = true;
 
     Object.keys(newErrors).forEach((key) => {
-      const value = formData.get(key) as string;
+      const value = (formData.get(key) as string) || '';
       const error = validateField(key, value);
       if (error) {
         isValid = false;
@@ -133,8 +117,9 @@ const BlogForm: React.FC<BlogFormProps> = ({ mode, id }) => {
   const handleInputSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-
     if (validateForm(formData)) {
+      const { author, email, phone, gender, title, descriptions, img } =
+        blogData;
       const newBlog: Item = {
         id: isEditMode ? id! : uuidv4(),
         author,
@@ -142,7 +127,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ mode, id }) => {
         phone,
         gender,
         title,
-        descriptions: description,
+        descriptions: descriptions,
         img,
       };
 
@@ -162,13 +147,15 @@ const BlogForm: React.FC<BlogFormProps> = ({ mode, id }) => {
     if (formRef.current) {
       formRef.current.reset();
     }
-    setAuthor('');
-    setEmail('');
-    setPhone('');
-    setGender('');
-    setTitle('');
-    setDescription('');
-    setImg('');
+    setBlogData({
+      author: '',
+      email: '',
+      phone: '',
+      gender: '',
+      title: '',
+      descriptions: '',
+      img: '',
+    });
     setErrors({
       author: '',
       email: '',
@@ -196,7 +183,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ mode, id }) => {
           name="author"
           id="author"
           placeholder="Author"
-          value={author}
+          value={blogData.author}
           onChange={(e) => handleFieldChange('author', e.target.value)}
           error={errors.author ? true : false}
         />
@@ -208,7 +195,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ mode, id }) => {
           name="email"
           id="email"
           placeholder="Email"
-          value={email}
+          value={blogData.email}
           onChange={(e) => handleFieldChange('email', e.target.value)}
           error={errors.email ? true : false}
         />
@@ -219,7 +206,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ mode, id }) => {
           name="phone"
           id="phone"
           placeholder="Phone"
-          value={phone}
+          value={blogData.phone}
           onChange={(e) => handleFieldChange('phone', e.target.value)}
           error={errors.phone ? true : false}
         />
@@ -233,7 +220,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ mode, id }) => {
             id="male"
             value="male"
             placeholder="Male"
-            checked={gender === 'male'}
+            checked={blogData.gender === 'male'}
             onChange={(e) => handleFieldChange('gender', e.target.value)}
             error={errors.gender ? true : false}
           />
@@ -244,7 +231,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ mode, id }) => {
             id="female"
             value="female"
             placeholder="Female"
-            checked={gender === 'female'}
+            checked={blogData.gender === 'female'}
             onChange={(e) => handleFieldChange('gender', e.target.value)}
           />
           <label htmlFor="female">Female</label>
@@ -255,7 +242,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ mode, id }) => {
           name="title"
           id="title"
           placeholder="Title"
-          value={title}
+          value={blogData.title}
           onChange={(e) => handleFieldChange('title', e.target.value)}
           error={errors.title ? true : false}
         />
@@ -266,9 +253,12 @@ const BlogForm: React.FC<BlogFormProps> = ({ mode, id }) => {
           className="border rounded-md px-3 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-400"
           name="descriptions"
           id="descriptions"
-          value={description}
+          value={blogData.descriptions}
           onChange={(e) => {
-            setDescription(e.target.value);
+            setBlogData(() => ({
+              ...blogData,
+              ['descriptions']: e.target.value,
+            }));
             handleFieldChange('descriptions', e.target.value);
           }}
           placeholder="Description"
@@ -281,7 +271,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ mode, id }) => {
           name="img"
           id="img"
           placeholder="Image URL"
-          value={img}
+          value={blogData.img}
           onChange={(e) => handleFieldChange('img', e.target.value)}
           error={errors.img ? true : false}
         />
